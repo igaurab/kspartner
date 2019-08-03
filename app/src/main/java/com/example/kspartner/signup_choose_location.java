@@ -19,7 +19,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,10 +37,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class signup_choose_location extends FragmentActivity implements OnMapReadyCallback {
 
@@ -53,13 +66,64 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
     private static final float DEFAULT_ZOOM = 15f;
     //widgets
     private EditText mSearchText;
+    private Button next;
+    //vars
+    private float latitude;
+    private float longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_choose_location);
         mSearchText = (EditText) findViewById(R.id.txt_input_search_restaurant);
+        next = findViewById(R.id.btn_next_maps);
         getLocationPermission();
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Func", "onClick: You clicked me");
+                final Restaurant restaurant = ((Restaurant)getIntent().getSerializableExtra("RESTAURANT_DATA"));
+                final String account_created_date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+                restaurant.setLatitude(Float.toString(latitude));
+                restaurant.setLongitude(Float.toString(longitude));
+                restaurant.setR_created_date(account_created_date);
+//          #####################################################################
+//            DATABASE WORKS FOR GETTING THE NEXT KEY OF RESTAURANT
+//          #####################################################################
+
+                final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Restaurants");
+                Query query = databaseReference.orderByKey().limitToLast(1);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String prev_key;
+                        String new_key;
+                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+                            prev_key = child.getKey();
+                            int key_num = Integer.parseInt( String.valueOf( prev_key.charAt(prev_key.length() - 1)));
+                            key_num += 1;
+                            new_key = "rid"+ key_num;
+                            restaurant.setR_id(new_key);
+                            restaurant.setLatitude(Float.toString(latitude));
+                            restaurant.setLongitude(Float.toString(longitude));
+                            restaurant.setR_created_date(account_created_date);
+                            databaseReference.child(new_key).setValue(restaurant);
+
+
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //Handle possible errors.
+                    }
+                });
+//###################################################################################################
+
+            }
+        });
 
     }
     private void init_search() {
@@ -122,6 +186,8 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
                             Toast.makeText(signup_choose_location.this, "got your location", Toast.LENGTH_LONG).show();
                             Location currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM,"me");
+                            latitude = (float) currentLocation.getLatitude();
+                            longitude = (float) currentLocation.getLongitude();
 
                         } else {
                             Toast.makeText(signup_choose_location.this, "Unable to get Location", Toast.LENGTH_LONG).show();
