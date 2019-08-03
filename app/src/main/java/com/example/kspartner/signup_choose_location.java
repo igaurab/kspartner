@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.hardware.Camera;
@@ -52,7 +53,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+//Things done in this class are:
+//1. Get the current location of the user
+//2. Complete the instance of Restaurant model created in Main Activity.
+//3. Generate a unique id for the Restaurant
+//4. Create a sharedPreference
+//      4.1 The sharedPreference contains the id of the Restaurant created and is used for displaying and Adding the contents of the Restaurant
+//5. Generate a User Class Based on UID and RID for the newly created Restaurant
 public class signup_choose_location extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -72,7 +79,8 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
     private String longitude;
     private String new_key;
     private String menu_id;
-
+    //Shared Preferences
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,17 +112,17 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
                             new_key = "rid"+ key_num;
                             menu_id = "mid" + key_num;
 
-
                             assert restaurant != null;
                             restaurant.setR_id(new_key);
                             restaurant.setMenu_id(menu_id);
                             restaurant.setLatitude(latitude);
                             restaurant.setLongitude(longitude);
                             restaurant.setR_created_date(account_created_date);
-                            databaseReference.child(String.valueOf(key_num)).setValue(restaurant);
+                            databaseReference.child(String.valueOf(new_key)).setValue(restaurant);
 
+                            Intent intent = new Intent(signup_choose_location.this, Add_Description.class);
+                            startActivity(intent);
                         }
-
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {

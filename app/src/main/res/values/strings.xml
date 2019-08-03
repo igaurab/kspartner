@@ -8,4 +8,11 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="tell_us_more_one">Let the user know</string>
+    <string name="more">More</string>
+    <string name="about_you">About you</string>
+    <string name="description">Description</string>
+    <string name="description_hint">Add a description about your restaurant</string>
+    <string name="emailId">Email Id</string>
+
 </resources>
