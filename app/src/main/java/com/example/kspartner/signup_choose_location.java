@@ -68,8 +68,10 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
     private EditText mSearchText;
     private Button next;
     //vars
-    private float latitude;
-    private float longitude;
+    private String latitude;
+    private String longitude;
+    private String new_key;
+    private String menu_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,35 +84,34 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Func", "onClick: You clicked me");
                 final Restaurant restaurant = ((Restaurant)getIntent().getSerializableExtra("RESTAURANT_DATA"));
                 final String account_created_date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-                restaurant.setLatitude(Float.toString(latitude));
-                restaurant.setLongitude(Float.toString(longitude));
-                restaurant.setR_created_date(account_created_date);
 //          #####################################################################
 //            DATABASE WORKS FOR GETTING THE NEXT KEY OF RESTAURANT
 //          #####################################################################
 
                 final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Restaurants");
-                Query query = databaseReference.orderByKey().limitToLast(1);
+                Query query = databaseReference.orderByKey().limitToFirst(1);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String prev_key;
-                        String new_key;
                         for (DataSnapshot child: dataSnapshot.getChildren()) {
                             prev_key = child.getKey();
                             int key_num = Integer.parseInt( String.valueOf( prev_key.charAt(prev_key.length() - 1)));
                             key_num += 1;
                             new_key = "rid"+ key_num;
-                            restaurant.setR_id(new_key);
-                            restaurant.setLatitude(Float.toString(latitude));
-                            restaurant.setLongitude(Float.toString(longitude));
-                            restaurant.setR_created_date(account_created_date);
-                            databaseReference.child(new_key).setValue(restaurant);
+                            menu_id = "mid" + key_num;
 
+
+                            assert restaurant != null;
+                            restaurant.setR_id(new_key);
+                            restaurant.setMenu_id(menu_id);
+                            restaurant.setLatitude(latitude);
+                            restaurant.setLongitude(longitude);
+                            restaurant.setR_created_date(account_created_date);
+                            databaseReference.child(String.valueOf(key_num)).setValue(restaurant);
 
                         }
 
@@ -122,6 +123,8 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
                 });
 //###################################################################################################
 
+
+                Log.d("User val", restaurant.toString());
             }
         });
 
@@ -186,8 +189,8 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
                             Toast.makeText(signup_choose_location.this, "got your location", Toast.LENGTH_LONG).show();
                             Location currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM,"me");
-                            latitude = (float) currentLocation.getLatitude();
-                            longitude = (float) currentLocation.getLongitude();
+                            latitude = String.valueOf(currentLocation.getLatitude());
+                            longitude = String.valueOf(currentLocation.getLongitude());
 
                         } else {
                             Toast.makeText(signup_choose_location.this, "Unable to get Location", Toast.LENGTH_LONG).show();
