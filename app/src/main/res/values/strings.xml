@@ -14,5 +14,6 @@
     <string name="description">Description</string>
     <string name="description_hint">Add a description about your restaurant</string>
     <string name="emailId">Email Id</string>
-
+    <string name="title_activity_home">Home</string>
+    <string name="add_category">Add Category</string>
 </resources>

@@ -26,11 +26,13 @@
 
         <com.google.android.material.textfield.TextInputEditText
 
+            android:id="@+id/txt_email_id_login"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignStart="@+id/emailId"
             android:layout_alignBottom="@+id/emailId"
             android:hint="@string/emailId"
+            android:singleLine="true"
             android:layout_alignLeft="@+id/emailId" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,10 +48,15 @@
 
         <com.google.android.material.textfield.TextInputEditText
 
+            android:id="@+id/txt_password_login"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignStart="@+id/password"
-            android:hint="Password" />
+            android:hint="Password"
+            android:singleLine="true"
+            android:imeOptions="actionGo"
+            android:inputType="textPassword"
+            android:layout_alignLeft="@+id/password" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -60,7 +67,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:background="@drawable/button"
-        android:onClick="loginUser"
         android:text="Login"
         android:textColor="#FFFFFF"/>
 

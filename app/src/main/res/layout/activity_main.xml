@@ -22,6 +22,7 @@
             android:hint="Restaurant Name"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:singleLine="true"
             />
 
         <EditText
@@ -29,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact Number"
+            android:inputType="number"
             android:layout_below="@+id/txt_restaurant_name"/>
 
         <EditText
@@ -36,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Address"
+            android:singleLine="true"
             android:layout_below="@+id/txt_restaurant_contact"/>
 
         <Button

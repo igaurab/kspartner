@@ -2,6 +2,7 @@ package com.example.kspartner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +38,9 @@ public class Add_Description extends AppCompatActivity {
                 Log.d("Func", "onClick: "+ preferences.getString("rid",null));
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Description");
                 databaseReference.child(preferences.getString("rid",null)).setValue(description);
+
+                Intent intent = new Intent(Add_Description.this, Home.class);
+                startActivity(intent);
             }
         });
     }
