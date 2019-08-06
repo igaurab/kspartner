@@ -12,6 +12,8 @@ public class ItemClass {
         this.price = price;
     }
 
+
+
     public String getName() {
         return name;
     }

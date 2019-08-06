@@ -4,9 +4,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,6 +21,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.concurrent.CountedCompleter;
@@ -44,6 +48,7 @@ public class Add_category extends AppCompatActivity {
     private CardView cardView;
    // private TextView tv_itemName, tv_Price;
     private EditText et_itemName, et_price;
+    // ...
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +122,51 @@ public class Add_category extends AppCompatActivity {
     }
 
     public void updateToDatabase() {
+        ItemClass itemClass = new ItemClass();
+        String Price;
+        String Category = category_name.getText().toString();
+        String rid,name,price;
+        EditText et_Name;
+        EditText et_Price;
 
+        //Initialize
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("Restaurant_Pref",0);
+        rid = preferences.getString("rid",null);
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Menu");
+
+        for (int i=0; i <= linearLayout.getChildCount()-1;i++) {
+            Log.d("DB", "updateToDatabase: "+ linearLayout.getChildAt(i).toString());
+            View view_CardLayout = linearLayout.getChildAt(i);
+            if (view_CardLayout instanceof CardView) {
+                Log.d("DB", "updateToDatabase: " + ((CardView) view_CardLayout).getChildCount());
+                Log.d("DB", "updateToDatabase: " + ((CardView) view_CardLayout).getChildAt(0));
+
+                View view_LinearLayout = ((CardView) view_CardLayout).getChildAt(0);
+                if (view_LinearLayout instanceof LinearLayout) {
+                    Log.d("DB", "updateToDatabase: " + ((LinearLayout) view_LinearLayout).getChildCount());
+                    Log.d("DB", "updateToDatabase: " + ((LinearLayout) view_LinearLayout).getChildAt(0));
+
+                    View et_name = ((LinearLayout) view_LinearLayout).getChildAt(0);
+                    View et_price = ((LinearLayout) view_LinearLayout).getChildAt(1);
+
+                    if (et_name instanceof EditText) {
+
+                        et_Name = ((EditText) et_name);
+                        name = et_Name.getText().toString();
+                        itemClass.setName(name);
+                        Log.d("Logs:", "updateToDatabase: " + et_Name.getText().toString());
+                    }
+                    if (et_price instanceof EditText) {
+                       et_Price = ((EditText) et_price);
+                        price = et_Price.getText().toString();
+                        itemClass.setPrice(Integer.parseInt(price));
+                        Log.d("Logs:", "updateToDatabase: " + et_Price.getText().toString());
+                    }
+                }
+            }
+            mDatabase.child(rid).child(Category).child("name"+i).child("name").setValue(itemClass.getName());
+            mDatabase.child(rid).child(Category).child("name"+i).child("price").setValue(itemClass.getPrice());
+        }
     }
     @Override
     protected void onStart() {
