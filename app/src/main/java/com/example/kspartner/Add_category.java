@@ -48,7 +48,8 @@ public class Add_category extends AppCompatActivity {
     private CardView cardView;
    // private TextView tv_itemName, tv_Price;
     private EditText et_itemName, et_price;
-    // ...
+    private DatabaseReference mDatabase;
+// ...
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,17 +133,20 @@ public class Add_category extends AppCompatActivity {
         //Initialize
         SharedPreferences preferences = getApplicationContext().getSharedPreferences("Restaurant_Pref",0);
         rid = preferences.getString("rid",null);
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Menu");
+        mDatabase = FirebaseDatabase.getInstance().getReference("Menu");
+
 
         for (int i=0; i <= linearLayout.getChildCount()-1;i++) {
             Log.d("DB", "updateToDatabase: "+ linearLayout.getChildAt(i).toString());
             View view_CardLayout = linearLayout.getChildAt(i);
             if (view_CardLayout instanceof CardView) {
+                Log.d("DB", "updateToDatabase: One step Closer");
                 Log.d("DB", "updateToDatabase: " + ((CardView) view_CardLayout).getChildCount());
                 Log.d("DB", "updateToDatabase: " + ((CardView) view_CardLayout).getChildAt(0));
 
                 View view_LinearLayout = ((CardView) view_CardLayout).getChildAt(0);
                 if (view_LinearLayout instanceof LinearLayout) {
+                    Log.d("DB", "updateToDatabase: One step Closer");
                     Log.d("DB", "updateToDatabase: " + ((LinearLayout) view_LinearLayout).getChildCount());
                     Log.d("DB", "updateToDatabase: " + ((LinearLayout) view_LinearLayout).getChildAt(0));
 
@@ -153,7 +157,7 @@ public class Add_category extends AppCompatActivity {
 
                         et_Name = ((EditText) et_name);
                         name = et_Name.getText().toString();
-                        itemClass.setName(name);
+                        itemClass.setName(name.toLowerCase());
                         Log.d("Logs:", "updateToDatabase: " + et_Name.getText().toString());
                     }
                     if (et_price instanceof EditText) {
@@ -164,8 +168,11 @@ public class Add_category extends AppCompatActivity {
                     }
                 }
             }
-            mDatabase.child(rid).child(Category).child("name"+i).child("name").setValue(itemClass.getName());
-            mDatabase.child(rid).child(Category).child("name"+i).child("price").setValue(itemClass.getPrice());
+//            mDatabase.child(rid).child(Category).child("name"+i).setValue(itemClass);
+            Log.d("Logs", "updateToDatabase: rid: " + rid + "category: " + Category + "name"+i + itemClass.getName() + itemClass.getPrice());
+            String name_  = "name" + i;
+            mDatabase.child(rid).child(Category.toLowerCase()).child(name_).setValue(itemClass);
+
         }
     }
     @Override
