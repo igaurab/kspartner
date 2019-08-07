@@ -58,6 +58,9 @@ public class Home extends AppCompatActivity implements BottomNavigationView.OnNa
             case R.id.navigation_dashboard:
                 fragment = new ReviewFragment();
                 break;
+            case R.id.profile_dashboard:
+                fragment = new RestaurantDetail();
+
         }
 
         return loadFragment(fragment);
