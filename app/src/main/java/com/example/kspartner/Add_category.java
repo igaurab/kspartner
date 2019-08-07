@@ -1,5 +1,6 @@
 package com.example.kspartner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,8 +22,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.concurrent.CountedCompleter;
@@ -44,11 +49,12 @@ public class Add_category extends AppCompatActivity {
     private LinearLayout linearLayout;
     private LinearLayout linearLayoutLocalCardView;
     private Context context;
-    private ViewGroup.LayoutParams layoutParameters;
+    private ViewGroup.LayoutParams layoutParameters, layoutParameters_for_card;
     private CardView cardView;
    // private TextView tv_itemName, tv_Price;
     private EditText et_itemName, et_price;
     private DatabaseReference mDatabase;
+    private String rid;
 // ...
 
     @Override
@@ -60,7 +66,8 @@ public class Add_category extends AppCompatActivity {
         category_name = findViewById(R.id.tet_category_name);
         img_add_new_item = findViewById(R.id.img_add_item_list);
         save = findViewById(R.id.btn_add_category_save);
-
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("Restaurant_Pref",0);
+        rid = preferences.getString("rid",null);
         linearLayout = findViewById(R.id.ll_container);
         context = getApplicationContext();
 
@@ -90,6 +97,11 @@ public class Add_category extends AppCompatActivity {
         layoutParameters = new ActionBar.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                ViewGroup.LayoutParams.MATCH_PARENT
+        );
+
+        layoutParameters_for_card = new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                100
         );
 
         cardView = new CardView(context);
@@ -126,13 +138,12 @@ public class Add_category extends AppCompatActivity {
         ItemClass itemClass = new ItemClass();
         String Price;
         String Category = category_name.getText().toString();
-        String rid,name,price;
+        String name,price;
         EditText et_Name;
         EditText et_Price;
 
         //Initialize
-        SharedPreferences preferences = getApplicationContext().getSharedPreferences("Restaurant_Pref",0);
-        rid = preferences.getString("rid",null);
+
         mDatabase = FirebaseDatabase.getInstance().getReference("Menu");
 
 
@@ -171,9 +182,40 @@ public class Add_category extends AppCompatActivity {
 //            mDatabase.child(rid).child(Category).child("name"+i).setValue(itemClass);
             Log.d("Logs", "updateToDatabase: rid: " + rid + "category: " + Category + "name"+i + itemClass.getName() + itemClass.getPrice());
             String name_  = "name" + i;
+            updateFoodItemList();
             mDatabase.child(rid).child(Category.toLowerCase()).child(name_).setValue(itemClass);
 
         }
+    }
+
+    public void updateFoodItemList() {
+
+        final DatabaseReference mDatabase_Foodlist = FirebaseDatabase.getInstance().getReference("Foodlist");
+        Query query = mDatabase_Foodlist.orderByKey().limitToFirst(1);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int id;
+                String prev_name;
+                String new_name = "name0";
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    prev_name = String.valueOf(child.getChildrenCount());
+                    Log.d("Log", "onDataChange: prev_name"+prev_name);
+                    id = Integer.parseInt(String.valueOf(prev_name.charAt(prev_name.length()-1)));
+                    Log.d("Log", "onDataChange: ID_Prev:"+ id);
+                    id++;
+
+                    Log.d("Log", "onDataChange: ID_Prev:"+ id);
+                    new_name = "name" + id;
+                }
+                mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
     @Override
     protected void onStart() {
