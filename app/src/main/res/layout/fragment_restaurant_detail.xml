@@ -11,16 +11,17 @@
         android:layout_height="match_parent"
         tools:context=".resdetails">
 
-
-
-        <RelativeLayout
+        <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             android:background="@drawable/border"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            />
 
         <LinearLayout
+            android:id="@+id/txt_description_profile"
+            android:layout_marginTop="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/image"
@@ -32,6 +33,8 @@
                 android:weightSum="2"
                 android:layout_marginBottom="5dp">
                 <TextView
+                    android:layout_marginLeft="-20dp"
+                    android:id="@+id/name_of_restaurant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Name of the Restaurant"
@@ -39,19 +42,25 @@
                     android:layout_weight="1"
                     android:textAlignment="center"/>
 
+
                 <TextView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_weight="1"
-                    android:text="Edit Profile"
+                    android:id="@+id/edit_restaurant_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Edit"
                     />
             </LinearLayout>
+
             <LinearLayout
+                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="2">
                 <TextView
+                    android:layout_marginLeft="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Description"
@@ -59,13 +68,37 @@
                     android:textStyle="bold"
                     android:layout_weight="1"/>
 
-                <ImageView
+                <TextView
+                    android:id="@+id/edit_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:text="Edit"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginRight="-114dp"
                     />
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:layout_margin="20dp"
+            android:layout_below="@+id/txt_description_profile"
+            android:id="@+id/profile_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/logout"
+            android:text="Log out"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:textColor="@color/white"
+            android:background="@drawable/button"
+            />
+
     </RelativeLayout>
 
 </FrameLayout>
