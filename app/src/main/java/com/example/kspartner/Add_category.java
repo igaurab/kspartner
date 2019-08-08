@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -146,7 +147,7 @@ public class Add_category extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Menu");
 
-
+        int index = 0;
         for (int i=0; i <= linearLayout.getChildCount()-1;i++) {
             Log.d("DB", "updateToDatabase: "+ linearLayout.getChildAt(i).toString());
             View view_CardLayout = linearLayout.getChildAt(i);
@@ -184,6 +185,8 @@ public class Add_category extends AppCompatActivity {
             String name_  = "name" + i;
             updateFoodItemList();
             mDatabase.child(rid).child(Category.toLowerCase()).child(name_).setValue(itemClass);
+            index++;
+
 
         }
     }
@@ -195,7 +198,7 @@ public class Add_category extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int id;
+                int id,index = 0;
                 String prev_name;
                 String new_name = "name0";
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
@@ -206,9 +209,10 @@ public class Add_category extends AppCompatActivity {
                     id++;
 
                     Log.d("Log", "onDataChange: ID_Prev:"+ id);
-                    new_name = "name" + id;
+                    new_name = "name" + index++;
                 }
                 mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString());
+
             }
 
             @Override

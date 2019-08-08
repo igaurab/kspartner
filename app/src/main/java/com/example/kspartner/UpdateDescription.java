@@ -20,7 +20,7 @@ public class UpdateDescription extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add__description);
+        setContentView(R.layout.activity_update_description);
 
         txt_description = findViewById(R.id.txt_description_update);
         btn_done = findViewById(R.id.btn_done_update);
@@ -30,16 +30,18 @@ public class UpdateDescription extends AppCompatActivity {
 
                 Log.d("Func", "onClick: Entered OnClick");
                 SharedPreferences preferences = getApplicationContext().getSharedPreferences("Restaurant_Pref",0);
+                String rid = preferences.getString("rid",null);
+                Log.d("DB", "onClick: "+rid);
 
-
-                Description description = new Description();
-                description.setDescription(txt_description.getText().toString());
-                description.setRid(preferences.getString("rid",null));
+                String desc = txt_description.getText().toString();
+                Log.d("DB", "onClick: " + desc);
 
                 Log.d("Func", "onClick: "+ preferences.getString("rid",null));
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Description");
-                databaseReference.child(preferences.getString("rid",null)).setValue(description.getDescription());
+                databaseReference.child(rid).child("description").setValue(desc);
+                databaseReference.child(rid).child("rid").setValue(rid);
 
+                txt_description.setText(desc);
                 Intent intent = new Intent(UpdateDescription.this, Home.class);
                 startActivity(intent);
             }

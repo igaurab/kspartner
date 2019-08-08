@@ -39,7 +39,7 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_container_home);
         recyclerview_submenu_item = view.findViewById(R.id.submenu_item_rv); SharedPreferences preferences = this.getActivity().getSharedPreferences("Restaurant_Pref",0);
         rid = preferences.getString("rid",null);
-        reference = FirebaseDatabase.getInstance().getReference("Foodlist").child("rid1");
+        reference = FirebaseDatabase.getInstance().getReference("Foodlist").child(rid);
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

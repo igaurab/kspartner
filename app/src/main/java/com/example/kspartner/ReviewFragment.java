@@ -40,7 +40,7 @@ public class ReviewFragment extends Fragment {
         final ArrayList<String> list_star = new ArrayList<>();
         SharedPreferences preferences = this.getActivity().getSharedPreferences("Restaurant_Pref",0);
         rid = preferences.getString("rid",null);
-        DatabaseReference review_ref = FirebaseDatabase.getInstance().getReference("Rating").child("rid1");
+        DatabaseReference review_ref = FirebaseDatabase.getInstance().getReference("Rating").child(rid);
         review_ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
