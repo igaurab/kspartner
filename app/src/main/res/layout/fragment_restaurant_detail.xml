@@ -74,6 +74,7 @@
                 android:paddingLeft="20dp"
                 android:text="Description"
                 android:layout_gravity="center"
+                android:elevation="20dp"
                 android:background="@drawable/white_rounded"/>
             <RelativeLayout
                 android:layout_marginTop="20dp"
@@ -92,15 +93,21 @@
                     />
             </RelativeLayout>
         </LinearLayout>
-
-        <TextView
+        <ScrollView
             android:layout_margin="20dp"
-            android:layout_below="@+id/txt_description_profile"
-            android:id="@+id/profile_description"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textSize="14sp"/>
+            android:layout_below="@+id/txt_description_profile"
+            >
+            <TextView
+                android:padding="20dp"
+                android:id="@+id/profile_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"/>
+        </ScrollView>
+
 
         <Button
             android:id="@+id/logout"
@@ -110,7 +117,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="50dp"
             android:textColor="@color/white"
-            android:background="@drawable/button"
+            android:background="@drawable/firewatch"
             />
 
     </RelativeLayout>

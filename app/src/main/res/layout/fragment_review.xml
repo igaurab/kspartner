@@ -19,7 +19,7 @@
         android:paddingTop="130dp"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:background="@drawable/review_design"
+        android:background="@drawable/review_design_main"
         android:text="4.2"
         android:textColor="@color/white"
         android:textStyle="bold"
