@@ -70,6 +70,7 @@ public class RestaurantDetail extends Fragment {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         fetchDataFromDataBase();
+        setrestaurant_picture();
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,9 +153,10 @@ public class RestaurantDetail extends Fragment {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     download_url = uri;
+
                                     Log.d("LOG", "onSuccess: "+ download_url);
                                     Log.d("LOG",""+ imageUpload);
-                                    imageUpload.child(rid).child("imgpath").setValue(download_url);
+                                    imageUpload.child(rid).child("imgpath").setValue(download_url.toString());
                                 }
                             });
 
