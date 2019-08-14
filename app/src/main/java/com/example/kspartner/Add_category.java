@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,7 +45,7 @@ public class Add_category extends AppCompatActivity {
     //widgets
     private TextInputEditText category_name;
     private ImageView img_add_new_item;
-    private Button save;
+    private ImageButton save;
 
     //Widgets for your dynamic Layout
     private LinearLayout linearLayout;
@@ -102,14 +103,19 @@ public class Add_category extends AppCompatActivity {
 
         layoutParameters_for_card = new ActionBar.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                100
+                400
         );
 
         cardView = new CardView(context);
         cardView.setLayoutParams(layoutParameters);
         cardView.setRadius(2);
-        cardView.setMaxCardElevation(2);
+        cardView.setMaxCardElevation(25);
         cardView.setId(CardLayoutCount);
+        cardView.setBackgroundResource(R.drawable.white_border);
+
+        ViewGroup.MarginLayoutParams cardViewMarginParams = (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+        cardViewMarginParams.setMargins(30, 20, 30, 5);
+        cardView.requestLayout();
 
         linearLayoutLocalCardView = new LinearLayout(context);
         linearLayoutLocalCardView.setLayoutParams(layoutParameters);
@@ -175,7 +181,7 @@ public class Add_category extends AppCompatActivity {
                     if (et_price instanceof EditText) {
                        et_Price = ((EditText) et_price);
                         price = et_Price.getText().toString();
-                        itemClass.setPrice(Integer.parseInt(price));
+                        itemClass.setPrice(price);
                         Log.d("Logs:", "updateToDatabase: " + et_Price.getText().toString());
                     }
                 }
@@ -183,35 +189,49 @@ public class Add_category extends AppCompatActivity {
 //            mDatabase.child(rid).child(Category).child("name"+i).setValue(itemClass);
             Log.d("Logs", "updateToDatabase: rid: " + rid + "category: " + Category + "name"+i + itemClass.getName() + itemClass.getPrice());
             String name_  = "name" + i;
-            updateFoodItemList();
             mDatabase.child(rid).child(Category.toLowerCase()).child(name_).setValue(itemClass);
             index++;
+            updateFoodItemList();
 
 
         }
+
+
     }
 
     public void updateFoodItemList() {
 
         final DatabaseReference mDatabase_Foodlist = FirebaseDatabase.getInstance().getReference("Foodlist");
-        Query query = mDatabase_Foodlist.orderByKey().limitToFirst(1);
+        Query query = mDatabase_Foodlist.orderByKey().limitToLast(1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int id,index = 0;
-                String prev_name;
-                String new_name = "name0";
-                for (DataSnapshot child: dataSnapshot.getChildren()) {
-                    prev_name = String.valueOf(child.getChildrenCount());
-                    Log.d("Log", "onDataChange: prev_name"+prev_name);
-                    id = Integer.parseInt(String.valueOf(prev_name.charAt(prev_name.length()-1)));
-                    Log.d("Log", "onDataChange: ID_Prev:"+ id);
-                    id++;
+                if ( !dataSnapshot.hasChild("rid5")) {
+                    String new_name = "name0";
+                    mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString().toLowerCase());
+                    Intent intent = new Intent(Add_category.this, HomeFragment.class);
+                    startActivity(intent);
 
-                    Log.d("Log", "onDataChange: ID_Prev:"+ id);
-                    new_name = "name" + index++;
+                }else {
+                    int id,index = 0;
+                    String prev_name;
+                    String new_name = "name0";
+                    for (DataSnapshot child: dataSnapshot.getChildren()) {
+                        prev_name = String.valueOf(child.getChildrenCount());
+                        Log.d("Log", "onDataChange: prev_name"+prev_name);
+                        id = Integer.parseInt(String.valueOf(prev_name.charAt(prev_name.length()-1)));
+                        Log.d("Log", "onDataChange: ID_Prev:"+ id);
+                        Log.d("Log", "onDataChange: ID_Prev:"+ id);
+                        new_name = "name" + id;
+
+                    }
+
+                    mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString().toLowerCase());
+                    Intent intent = new Intent(Add_category.this, HomeFragment.class);
+                    startActivity(intent);
                 }
-                mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString());
+
+
 
             }
 

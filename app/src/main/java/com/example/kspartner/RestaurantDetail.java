@@ -40,6 +40,8 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.UUID;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -47,7 +49,7 @@ public class RestaurantDetail extends Fragment {
     Button logout;
     TextView res_name,res_description;
     TextView edit_profile, edit_description;
-    ImageView photo;
+    CircleImageView photo;
     String rid;
     private Uri filePath;
     FirebaseStorage storage;
@@ -181,13 +183,19 @@ public class RestaurantDetail extends Fragment {
     }
     public void setrestaurant_picture()
     {
+
         DatabaseReference reference_img;
         reference_img = FirebaseDatabase.getInstance().getReference("Images").child(rid);
         reference_img.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String imgpath = dataSnapshot.child("imgpath").getValue(String.class);
-                Picasso.get().load(imgpath).into(photo);
+                if (imgpath == null) {
+                    imgpath = "https://firebasestorage.googleapis.com/v0/b/khajasangram-c54ca.appspot.com/o/food.png?alt=media&token=afec85ea-f5d6-436b-b3e8-174c039005fb";
+                    Picasso.get().load(imgpath).into(photo);
+                } else {
+                    Picasso.get().load(imgpath).into(photo);
+                }
             }
 
             @Override

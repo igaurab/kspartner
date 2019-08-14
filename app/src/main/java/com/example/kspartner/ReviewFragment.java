@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,45 +30,55 @@ public class ReviewFragment extends Fragment {
     String rid;
     ReviewAdaptor reviewAdaptor;
     RecyclerView recyclerView;
+    Integer avg_rating = 0;
+    TextView ratingsBold;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         final View view =  inflater.inflate(R.layout.fragment_review, null);
         recyclerView = view.findViewById(R.id.recycler_view_container);
+        ratingsBold = view.findViewById(R.id.ratingsBold);
 
         final ArrayList<String> list_name = new ArrayList<>();
         final ArrayList<String> list_star = new ArrayList<>();
         SharedPreferences preferences = this.getActivity().getSharedPreferences("Restaurant_Pref",0);
         rid = preferences.getString("rid",null);
         DatabaseReference review_ref = FirebaseDatabase.getInstance().getReference("Rating").child(rid);
-        review_ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
-                    String name = snapshot.child("name").getValue(String.class);
-                    String star = snapshot.child("stars").getValue(String.class);
+        try {
+            review_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        String name = snapshot.child("name").getValue(String.class);
+                        String star = snapshot.child("stars").getValue(String.class);
 
-                    list_name.add(name);
-                    list_star.add(star);
+                        list_name.add(name);
+                        list_star.add(star);
+                        avg_rating += Integer.parseInt(star);
+                        reviewAdaptor = new ReviewAdaptor(recyclerView, getActivity(),list_name,list_star);
+                        recyclerView.setAdapter(reviewAdaptor);
 
-                    reviewAdaptor = new ReviewAdaptor(recyclerView, getActivity(),list_name,list_star);
-                    recyclerView.setAdapter(reviewAdaptor);
+                        recyclerView.setHasFixedSize(true);
+                        // use a linear layout manager
+                        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+                        recyclerView.setLayoutManager(mLayoutManager);
 
-                    recyclerView.setHasFixedSize(true);
-                    // use a linear layout manager
-                    LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(mLayoutManager);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+            });
+            ratingsBold.setText(avg_rating);
+        } catch (Exception e) {
+            ratingsBold.setText("0.00");
+            TextView txt_rating =  view.findViewById(R.id.txt_review);
+            txt_rating.setText("No Reviews");
+        }
 
         return view;
     }

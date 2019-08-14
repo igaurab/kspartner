@@ -2,12 +2,12 @@ package com.example.kspartner;
 
 public class ItemClass {
     private String name;
-    private int price;
+    private String price;
 
     public ItemClass() {
     }
 
-    public ItemClass(String name, int price) {
+    public ItemClass(String name, String price) {
         this.name = name;
         this.price = price;
     }
@@ -22,11 +22,11 @@ public class ItemClass {
         this.name = name;
     }
 
-    public int getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 }

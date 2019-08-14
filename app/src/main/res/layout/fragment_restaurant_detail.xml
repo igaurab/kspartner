@@ -27,6 +27,7 @@
             android:layout_marginBottom="10dp"
             app:civ_border_width="1dp"
             app:civ_border_color="@color/white"
+            android:src="@drawable/food"
             />
 
         <LinearLayout
