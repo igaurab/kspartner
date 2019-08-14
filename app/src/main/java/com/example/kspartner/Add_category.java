@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -206,10 +207,11 @@ public class Add_category extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if ( !dataSnapshot.hasChild("rid5")) {
+                if ( !dataSnapshot.hasChild(rid)) {
                     String new_name = "name0";
                     mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString().toLowerCase());
                     Intent intent = new Intent(Add_category.this, HomeFragment.class);
+                    Toast.makeText(getApplicationContext(),""+ category_name+" added",Toast.LENGTH_LONG).show();
                     startActivity(intent);
 
                 }else {
@@ -228,6 +230,7 @@ public class Add_category extends AppCompatActivity {
 
                     mDatabase_Foodlist.child(rid).child(new_name).setValue(category_name.getText().toString().toLowerCase());
                     Intent intent = new Intent(Add_category.this, HomeFragment.class);
+                    Toast.makeText(getApplicationContext(),""+ category_name+" added",Toast.LENGTH_LONG).show();
                     startActivity(intent);
                 }
 

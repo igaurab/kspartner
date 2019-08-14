@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,27 +46,37 @@ public class ReviewFragment extends Fragment {
         SharedPreferences preferences = this.getActivity().getSharedPreferences("Restaurant_Pref",0);
         rid = preferences.getString("rid",null);
         DatabaseReference review_ref = FirebaseDatabase.getInstance().getReference("Rating").child(rid);
-        try {
+        Toast.makeText(getContext(),""+review_ref,Toast.LENGTH_LONG).show();
+
             review_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                    {
-                        String name = snapshot.child("name").getValue(String.class);
-                        String star = snapshot.child("stars").getValue(String.class);
+                    if (dataSnapshot.getValue() == null ) {
+                        ratingsBold.setText("0.00");
+                        TextView textView = view.findViewById(R.id.txt_review);
+                        textView.setText("No Ratings");
 
-                        list_name.add(name);
-                        list_star.add(star);
-                        avg_rating += Integer.parseInt(star);
-                        reviewAdaptor = new ReviewAdaptor(recyclerView, getActivity(),list_name,list_star);
-                        recyclerView.setAdapter(reviewAdaptor);
+                    }else{
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                        {
+                            String name = snapshot.child("name").getValue(String.class);
+                            String star = snapshot.child("stars").getValue(String.class);
 
-                        recyclerView.setHasFixedSize(true);
-                        // use a linear layout manager
-                        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-                        recyclerView.setLayoutManager(mLayoutManager);
+                            list_name.add(name);
+                            list_star.add(star);
+                            avg_rating += Integer.parseInt(star);
+                            reviewAdaptor = new ReviewAdaptor(recyclerView, getActivity(),list_name,list_star);
+                            recyclerView.setAdapter(reviewAdaptor);
 
+                            recyclerView.setHasFixedSize(true);
+                            // use a linear layout manager
+                            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+                            recyclerView.setLayoutManager(mLayoutManager);
+
+                        }
+                        ratingsBold.setText(String.valueOf(avg_rating));
                     }
+
                 }
 
                 @Override
@@ -73,12 +84,8 @@ public class ReviewFragment extends Fragment {
 
                 }
             });
-            ratingsBold.setText(avg_rating);
-        } catch (Exception e) {
-            ratingsBold.setText("0.00");
-            TextView txt_rating =  view.findViewById(R.id.txt_review);
-            txt_rating.setText("No Reviews");
-        }
+
+
 
         return view;
     }
