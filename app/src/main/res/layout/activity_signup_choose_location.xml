@@ -46,9 +46,13 @@
     </RelativeLayout>
 
     <Button
+        android:id="@+id/btn_next_maps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Next"
         android:layout_alignBottom="@+id/map"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/button"
+        android:textColor="@color/white"/>
 </RelativeLayout>

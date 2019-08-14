@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.hardware.Camera;
@@ -19,7 +21,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,11 +39,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
+import java.util.Locale;
+//Things done in this class are:
+//1. Get the current location of the user
+//2. Complete the instance of Restaurant model created in Main Activity.
+//3. Generate a unique id for the Restaurant
+//4. Create a sharedPreference
+//      4.1 The sharedPreference contains the id of the Restaurant created and is used for displaying and Adding the contents of the Restaurant
+//5. Generate a User Class Based on UID and RID for the newly created Restaurant
 public class signup_choose_location extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -53,13 +75,83 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
     private static final float DEFAULT_ZOOM = 15f;
     //widgets
     private EditText mSearchText;
-
+    private Button next;
+    //vars
+    private String latitude;
+    private String longitude;
+    private String new_key;
+    private String menu_id;
+    //Shared Preferences
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_choose_location);
         mSearchText = (EditText) findViewById(R.id.txt_input_search_restaurant);
+        next = findViewById(R.id.btn_next_maps);
+
+        //Restaurant Owner User Object
+       final Restaurant_owner_info restaurant_owner_info = new Restaurant_owner_info();
+
+//       Shared Preference Initialization:
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Restaurant_Pref", 0);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
         getLocationPermission();
+//          #####################################################################
+//            DATABASE WORKS FOR GETTING THE NEXT KEY OF RESTAURANT
+//          #####################################################################
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final DatabaseReference restaurant_owner_info_db_reference = FirebaseDatabase.getInstance().getReference("User_Restaurant");
+
+        final String uid = mAuth.getCurrentUser().getUid();
+        String emailId = mAuth.getCurrentUser().getEmail();
+        restaurant_owner_info.setUid(uid);
+        restaurant_owner_info.setEmailId(emailId);
+        Log.d("Tags", "onClick: " + uid);
+
+        final Restaurant restaurant = ((Restaurant)getIntent().getSerializableExtra("RESTAURANT_DATA"));
+        final String account_created_date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Restaurants");
+        Query query = databaseReference.orderByKey().limitToLast(1) ;
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String prev_key;
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    prev_key = child.getKey();
+                    int key_num = Integer.parseInt( String.valueOf( prev_key.charAt(prev_key.length() - 1)));
+                    key_num += 1;
+                    new_key = "rid"+ key_num;
+                    menu_id = "mid" + key_num;
+                        assert restaurant != null;
+                        restaurant.setR_id(new_key);
+                        restaurant.setMenu_id(menu_id);
+                        restaurant.setLatitude(latitude);
+                        restaurant.setLongitude(longitude);
+                        restaurant.setR_created_date(account_created_date);
+                        restaurant_owner_info.setRid(new_key);
+//                            Shared Preference Editor
+                        editor.putString("uid",uid);
+                        editor.putString("rid",new_key);
+                        editor.putBoolean("session",true);
+                        editor.apply();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Handle possible errors.
+            }
+        });
+//##################################################################################################/#
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                databaseReference.child(String.valueOf(new_key)).setValue(restaurant);
+                restaurant_owner_info_db_reference.child(uid).setValue(restaurant_owner_info);
+                Intent intent = new Intent(signup_choose_location.this, Add_Description.class);
+                startActivity(intent);
+            }
+        });
 
     }
     private void init_search() {
@@ -122,6 +214,8 @@ public class signup_choose_location extends FragmentActivity implements OnMapRea
                             Toast.makeText(signup_choose_location.this, "got your location", Toast.LENGTH_LONG).show();
                             Location currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM,"me");
+                            latitude = String.valueOf(currentLocation.getLatitude());
+                            longitude = String.valueOf(currentLocation.getLongitude());
 
                         } else {
                             Toast.makeText(signup_choose_location.this, "Unable to get Location", Toast.LENGTH_LONG).show();

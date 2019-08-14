@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".UpdateProfile"
     android:orientation="vertical"
     android:padding="30dp">
 
@@ -16,7 +16,7 @@
         android:padding="30dp">
 
         <EditText
-            android:id="@+id/txt_restaurant_name"
+            android:id="@+id/txt_restaurant_name_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Restaurant Name"
@@ -26,26 +26,26 @@
             />
 
         <EditText
-            android:id="@+id/txt_restaurant_contact"
+            android:id="@+id/txt_restaurant_contact_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact Number"
             android:inputType="number"
-            android:layout_below="@+id/txt_restaurant_name"/>
+            android:layout_below="@+id/txt_restaurant_name_update"/>
 
         <EditText
-            android:id="@+id/txt_restaurant_address"
+            android:id="@+id/txt_restaurant_address_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Address"
             android:singleLine="true"
-            android:layout_below="@+id/txt_restaurant_contact"/>
+            android:layout_below="@+id/txt_restaurant_contact_update"/>
 
         <Button
-            android:id="@+id/btn_next_form_main_activity"
+            android:id="@+id/btn_next_form_main_activity_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txt_restaurant_address"
+            android:layout_below="@+id/txt_restaurant_address_update"
             android:layout_alignParentRight="true"
             android:layout_marginTop="14dp"
             android:layout_marginRight="23dp"
